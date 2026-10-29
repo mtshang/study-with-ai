@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "skills": [
+    {
+      "id": "read-pdf",
+      "name": "PDF 教材读取",
+      "description": "提取文字型 PDF 教材，标明来源与解析局限。",
+      "extension": ".pdf",
+      "license": "MIT",
+      "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/5f2bc0341354fd5590aef76a533ada1e1e5b4e62/skills/markitdown",
+      "commit": "5f2bc0341354fd5590aef76a533ada1e1e5b4e62",
+      "adapted": true,
+      "sha256": "71297ca18624457ee77863d1ab43b6a0bab786db8c7957c9d30749a69257d69b"
+    },
+    {
+      "id": "read-docx",
+      "name": "Word 教材读取",
+      "description": "读取 DOCX 正文与表格，依据原文讲解和出题。",
+      "extension": ".docx",
+      "license": "MIT",
+      "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/5f2bc0341354fd5590aef76a533ada1e1e5b4e62/skills/markitdown",
+      "commit": "5f2bc0341354fd5590aef76a533ada1e1e5b4e62",
+      "adapted": true,
+      "sha256": "a9e502dd08d8711f7452cce83a13ee4669aaf3054d2cd7e992a167bd72e26ab7"
+    },
+    {
+      "id": "read-pptx",
+      "name": "课件读取",
+      "description": "读取 PPTX 课件文字，保留可提取的幻灯片结构。",
+      "extension": ".pptx",
+      "license": "MIT",
+      "upstream": "https://github.com/K-Dense-AI/scientific-agent-skills/tree/5f2bc0341354fd5590aef76a533ada1e1e5b4e62/skills/markitdown",
+      "commit": "5f2bc0341354fd5590aef76a533ada1e1e5b4e62",
+      "adapted": true,
+      "sha256": "68578e5e068c5b360863f55c60eff4d47a36f3db1ee4bc60ba5a7a142d27cd6e"
+    }
+  ]
+}

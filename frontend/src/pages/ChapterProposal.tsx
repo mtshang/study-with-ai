@@ -1,0 +1,5 @@
+import type {Proposal} from '../ai';
+export function ChapterProposal({payload}:{payload:Proposal['payload']}){
+ const labels:Record<string,string>={add:'新增',update:'编辑',move:'移动',archive:'移入回收站',restore:'恢复'};
+ return <><p>基于课程版本 {payload.command?.expected_version}。若课程已变化，批准会被拒绝，需重新生成方案。</p>{payload.kind==='recycle'?<p>{payload.preview?.titles?.join('、')} · 已有提交和批改记录保留。</p>:<>{payload.preview?.changes?.map((c,i)=><section key={i}><h4>{labels[c.action]||c.action}：{c.title}</h4>{c.action==='move'&&<p>移到{c.after_title?`「${c.after_title}」之后`:'路线开头'}</p>}{c.action==='archive'&&<p>关联练习、作业转为未分类，历史保留。</p>}{(c.action==='add'||c.action==='update')&&<details><summary>查看修改前后内容</summary>{c.before&&<><strong>修改前</strong><p>{c.before.title} · {c.before.description}</p><p className="preserve-text">{c.before.content}</p></>}<strong>修改后</strong><p>{c.after.title} · {c.after.description}</p><p className="preserve-text">{c.after.content}</p></details>}</section>)}<p>调整后的路线：{payload.preview?.route_titles?.join(' → ')}</p></>}</>;
+}

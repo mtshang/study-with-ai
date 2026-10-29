@@ -1,0 +1,84 @@
+# Real credentials and machine-specific configuration
+.env
+.env.*
+*.env
+*.env.*
+# Only these sanitized root templates are published.
+!/.env.example
+!/.env.runner.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies, build output and local caches
+node_modules/
+dist/
+build/
+.vite/
+.npm-cache/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local tests and acceptance harnesses (retained on disk)
+tests/
+__tests__/
+*.test.*
+*.spec.*
+/backend/pytest.ini
+/backend/requirements-dev.txt
+/backend/scripts/verify_*.py
+/frontend/playwright.config.*
+coverage/
+.coverage
+.coverage.*
+htmlcov/
+playwright-report/
+test-results/
+blob-report/
+
+# Personal files: keep only the empty-directory placeholder
+/user_data/*
+!/user_data/.gitkeep
+
+# Runtime state, logs and database exports
+/backend/runner_data/
+/data/
+/storage/
+/uploads/
+/workspaces/
+/logs/
+*.log
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.dump
+*.sql.gz
+*.bak
+*.tmp
+
+# Internal learning notes, handoffs and local agent instructions
+/study_materials/
+/documents/
+AGENTS.md
+agent.md
+.agents/
+.codex/
+
+# Local editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
