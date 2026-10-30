@@ -33,7 +33,7 @@ def view(user,db):
     result={'revision':revision(raw,owner.permission),'permission':owner.permission}
     for channel in ['chat','vision','embedding']:
         prefix=channel.upper()
-        result[channel]={'base_url':values.get(prefix+'_BASE_URL') or '', 'model':values.get(prefix+'_MODEL') or '', 'key_set':bool(values.get(prefix+'_API_KEY'))}
+        result[channel]={'base_url':values.get(prefix+'_BASE_URL') or '', 'model':values.get(prefix+'_MODEL') or '', 'key_set':bool(values.get(prefix+'_API_KEY')),'trust_url':bool(values.get(prefix+'_BASE_URL') and values.get(prefix+'_TRUSTED_URL')==values.get(prefix+'_BASE_URL').rstrip('/'))}
     db.commit()
     return result
 
@@ -60,7 +60,9 @@ def save(user,data,db):
     if key is not None and data.clear_key: raise HTTPException(422,'不能同时更新和清除 Key')
     if base!=(values.get(prefix+'_BASE_URL') or '').rstrip('/') and values.get(prefix+'_API_KEY') and key is None and not data.clear_key:
         raise HTTPException(422,'更换接口地址时请重新填写 Key，或明确清除原 Key')
-    changes={prefix+'_BASE_URL':base,prefix+'_MODEL':model}
+    old_base=(values.get(prefix+'_BASE_URL') or '').rstrip('/')
+    trust=data.trust_url if data.trust_url is not None else bool(base and base==old_base and values.get(prefix+'_TRUSTED_URL')==base)
+    changes={prefix+'_BASE_URL':base,prefix+'_MODEL':model,prefix+'_TRUSTED_URL':base if trust and base else ''}
     if key is not None: changes[prefix+'_API_KEY']=key
     if data.clear_key: changes[prefix+'_API_KEY']=''
     # Preserve unrelated entries and comments, including other model channels.
@@ -88,4 +90,4 @@ def model_config(user,channel='chat'):
     base=values.get(prefix+'_BASE_URL') or ''
     model=values.get(prefix+'_MODEL') or ''
     if not all([key,base,model]): raise HTTPException(422,'请先在设置中填写该模型的 API Key、接口地址和模型名称')
-    return {'key':key,'base_url':validate_url(base),'model':model}
+    return {'key':key,'base_url':validate_url(base),'model':model,'trusted_url':base.rstrip('/') if values.get(prefix+'_TRUSTED_URL')==base.rstrip('/') else ''}

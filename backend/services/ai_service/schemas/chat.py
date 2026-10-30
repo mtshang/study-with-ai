@@ -10,6 +10,7 @@ class ConfigUpdate(BaseModel):
     model: str = Field(max_length=120)
     api_key: SecretStr | None = None
     clear_key: bool = False
+    trust_url: bool | None = None
     permission: Literal['manual','assisted','full'] | None = None
 
 class RunInput(BaseModel):

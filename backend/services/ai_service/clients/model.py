@@ -4,17 +4,14 @@ from urllib.parse import urlsplit
 import httpx
 from fastapi import HTTPException
 
-async def check_destination(base):
-    host=urlsplit(base).hostname
-    try:
-        addresses=await asyncio.get_running_loop().getaddrinfo(host,443,type=socket.SOCK_STREAM)
-        def permitted(address):
-            ip=ipaddress.ip_address(address)
-            # Proxy Fake-IP for this explicit provider only; TLS verifies the original hostname.
-            return ip.is_global or (host=='api.deepseek.com' and ((ip.version==4 and ip in ipaddress.ip_network('198.18.0.0/15')) or (ip.version==6 and ip in ipaddress.ip_network('2001:2::/48'))))
-        if not addresses or any(not permitted(row[4][0]) for row in addresses):
-            raise HTTPException(422,'模型接口不能指向本机、内网或保留地址')
-    except socket.gaierror: raise HTTPException(502,'模型接口域名无法解析') from None
+from .model_network import ModelTransport,resolve
+
+async def check_destination(base,trusted_url=''):
+    await resolve(urlsplit(base).hostname,bool(base and base.rstrip('/')==trusted_url))
+
+def transport(config):
+    base=config['base_url'].rstrip('/')
+    return ModelTransport(base+'/chat/completions',base_url=base,trusted_url=config.get('trusted_url',''))
 
 def request_body(config,messages,tools=None,stream=True,max_tokens=1600):
     body={'model':config['model'],'messages':messages,'stream':stream,'max_tokens':max_tokens}
@@ -28,11 +25,10 @@ def red_image():
     return 'data:image/png;base64,'+base64.b64encode(data).decode()
 
 async def stream_reply(config,messages,tools,on_text):
-    await check_destination(config['base_url'])
     payload=request_body(config,messages,tools)
     content='';calls={};total=0;finished=False
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(45,connect=10),trust_env=False,follow_redirects=False) as client:
+        async with httpx.AsyncClient(transport=transport(config),timeout=httpx.Timeout(45,connect=10),trust_env=False,follow_redirects=False) as client:
             async with client.stream('POST',config['base_url'].rstrip('/')+'/chat/completions',
                 headers={'Authorization':'Bearer '+config['key']},json=payload) as response:
                 if response.status_code!=200: raise HTTPException(502,f'模型接口返回 HTTP {response.status_code}，请检查 Key、模型名称、余额和接口地址')
@@ -72,10 +68,9 @@ async def stream_reply(config,messages,tools,on_text):
         raise HTTPException(502,'模型连接失败或返回格式异常，已收到的内容会保留') from None
 
 async def test_connection(config,channel):
-    await check_destination(config['base_url'])
     content='Reply only OK.' if channel=='chat' else [{'type':'text','text':'What is the main color? Reply in one word.'},{'type':'image_url','image_url':{'url':red_image()}}]
     try:
-        async with httpx.AsyncClient(timeout=30,trust_env=False,follow_redirects=False) as client:
+        async with httpx.AsyncClient(transport=transport(config),timeout=30,trust_env=False,follow_redirects=False) as client:
             response=await client.post(config['base_url'].rstrip('/')+'/chat/completions',headers={'Authorization':'Bearer '+config['key']},json=request_body(config,[{'role':'user','content':content}],stream=False,max_tokens=32))
         if response.status_code!=200: raise HTTPException(502,f'连接测试返回 HTTP {response.status_code}；请检查 Key、模型名称、能力与余额')
         text=response.json()['choices'][0]['message'].get('content')

@@ -12,7 +12,7 @@ from ..infrastructure.database import SessionLocal
 from ..models import AgentJob
 from . import configuration,recovery,assistants
 
-VERSION='classified-text-1200-overlap160-v2'
+VERSION='full-endpoint-text-1200-overlap160-v3'
 SLOTS=asyncio.Semaphore(2)
 def profile(config):
     return hashlib.sha256(json.dumps([config['base_url'].rstrip('/'),config['model'],VERSION],ensure_ascii=False).encode()).hexdigest()
