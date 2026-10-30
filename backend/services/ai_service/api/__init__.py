@@ -38,3 +38,5 @@ router.include_router(extensions_router)
 
 from .sandbox import router as sandbox_router
 router.include_router(sandbox_router)
+from .rag import router as rag_router
+router.include_router(rag_router)

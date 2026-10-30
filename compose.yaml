@@ -1,6 +1,14 @@
 name: study-with-ai
 
 services:
+  qdrant:
+    image: qdrant/qdrant:v1.16.3
+    ports:
+      - "127.0.0.1:6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: "no"
+
   mysql:
     image: mysql:8.4
     ports:
@@ -25,4 +33,5 @@ services:
     restart: "no"
 
 volumes:
+  qdrant_data:
   mysql_data:

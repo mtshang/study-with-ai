@@ -198,6 +198,11 @@ class CourseToolSession:
     async def read_code_submission(self, data, name):
         return await self._chapter_call('code-result', chapter_id=str(data.submission_id))
 
+    async def search_course_knowledge(self,data,name):
+        from . import rag
+        s=self.scope
+        return await rag.search(s.user,s.course_id,s.cookie,data)
+
     async def list_course_materials(self, data, name):
         s = self.scope
         rows = await materials.call(s.cookie, s.user.id, s.course_id)

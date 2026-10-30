@@ -1,3 +1,4 @@
+import { KnowledgeIndex } from "./KnowledgeIndex";
 import { useContext, useRef, useState } from "react";
 import { ArrowRight, Download, FileText, Link2, Search, Upload } from "lucide-react";
 import type { Course, Material } from "../types";
@@ -23,6 +24,7 @@ export function ServerMaterials({course,toast}:{course:Course;toast:(text:string
     <PageTitle eyebrow="YOUR KNOWLEDGE SHELF" title="课程资料" description="保存教材、网页链接和自己的笔记。"
       action={<div className="button-row"><button className="button" disabled={server.busy} onClick={()=>setEditor({id:uid(),kind:"note"})}><Link2 size={16}/>添加链接或笔记</button>
         <button className="button primary" disabled={server.busy} onClick={()=>setEditor({id:uid(),kind:"file"})}><Upload size={16}/>上传资料</button></div>}/>
+    {server.userId&&<KnowledgeIndex key={server.userId+course.id} userId={server.userId} courseId={course.id}/>}
     <div className="toolbar"><div className="tab-row" role="group" aria-label="资料来源筛选">
       {[["all","全部资料"],...Object.entries(sourceLabels)].map(([key,label])=><button key={key} className={source===key?"selected":""} onClick={()=>setSource(key)}>{label}</button>)}
     </div><div className="search-field"><Search size={16}/><input aria-label="搜索资料" placeholder="搜索资料名称" value={search} onChange={e=>setSearch(e.target.value)}/></div></div>

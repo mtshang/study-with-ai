@@ -23,7 +23,11 @@ def put_config(data:ConfigUpdate,user=Depends(user_context),db=Depends(get_db)):
     return configuration.save(user,data,db)
 
 @router.post('/config/{channel}/test')
-async def test_config(channel:Literal['chat','vision'],user=Depends(user_context)):
+async def test_config(channel:Literal['chat','vision','embedding'],user=Depends(user_context)):
+    if channel=='embedding':
+        from ..clients.embeddings import embed
+        vectors=await embed(configuration.model_config(user,channel),['连接测试'])
+        return {'ok':True,'message':f'向量化连接成功，维度：{len(vectors[0])}'}
     return await model.test_connection(configuration.model_config(user,channel),channel)
 
 @router.post('/courses/{course_id}/submissions/{submission_id}/grade')

@@ -16,6 +16,7 @@ from ..schemas.tools import (TOOLS, ExerciseArgs, AssignmentArgs, PythonExercise
                             CodeResultArgs, DelegateArgs, SkillArgs, MaterialArgs)
 
 from ..schemas.memory import MemoryCommand
+from ..schemas.rag import SearchRequest
 from ..schemas.extensions import ExtensionID, SkillFile, MCPCall
 
 from ..schemas.sandbox import SandboxCommand,ReadArtifact
@@ -50,6 +51,7 @@ class ToolSpec:
 
 
 _EXTENSIONS = {
+    'search_course_knowledge':(SearchRequest,'read','search_course_knowledge','语义检索当前课程已索引资料，返回原文片段和来源。先判断证据是否相关，回答引用来源；没有索引时提示用户在资料页建立，不能编造证据。'),
     'run_sandbox':(SandboxCommand,'execute','run_sandbox','在禁网临时Python容器运行代码或当前已加载Skill的.py脚本。输入选择本课程文件/产物，输出写OUTPUT_DIR；手动模式待批准，不写正式业务。'),
     'list_generated_artifacts':(NoArguments,'read','list_generated_artifacts','列出本课程执行状态、生成文件ID与下载信息。'),
     'read_generated_artifact':(ReadArtifact,'read','read_generated_artifact','按ID分页读取当前课程的UTF-8文本产物，不能跨课程。'),

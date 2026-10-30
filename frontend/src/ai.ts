@@ -1,7 +1,7 @@
 export type RecoveryState={status:string;recoveries:number;error:string;interrupted_drafts:{text:string;at:string}[]};
 import {accountRequest} from './api';
 export type ModelChannel={base_url:string;model:string;key_set:boolean};
-export type ModelSettings={revision:string;permission:'manual'|'assisted'|'full';chat:ModelChannel;vision:ModelChannel};
+export type ModelSettings={revision:string;permission:'manual'|'assisted'|'full';chat:ModelChannel;vision:ModelChannel;embedding:ModelChannel};
 type ChapterPreview={title:string;description:string;content:string};
 export type Proposal={id:string;status:string;error:string;payload:{kind?:'exercise'|'assignment'|'chapters'|'recycle'|'memory'|'mcp';arguments?:unknown;result?:unknown;description?:string;title:string;questions?:{python?:import('./types').PythonExercise;prompt:string;options?:string[]|null;correct?:string|null;explanation:string}[];command?:{expected_version:number};preview?:{titles?:string[];route_titles?:string[];changes?:{action:string;title:string;before:ChapterPreview|null;after:ChapterPreview;after_title:string|null}[]}}};
 export type AssistantState={paused:boolean;teacher_run_id:string|null;active_assistants:number;pending_results:number;assistants:{recovery?:RecoveryState|null;id:string;run_id:string|null;submission_id?:string|null;purpose?:string;role:string;task:string;status:string;result:string;error:string;consumed_by:string|null}[]};

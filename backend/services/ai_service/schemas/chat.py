@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
 class ConfigUpdate(BaseModel):
     model_config=ConfigDict(extra='forbid')
     revision: str = Field(min_length=64,max_length=64)
-    channel: Literal['chat','vision']
+    channel: Literal['chat','vision','embedding']
     base_url: str = Field(max_length=500)
     model: str = Field(max_length=120)
     api_key: SecretStr | None = None

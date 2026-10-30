@@ -2,7 +2,7 @@ import {useEffect,useState} from 'react';
 import {aiRequest,type ModelSettings} from '../ai';
 
 export function ApiSettings({userId}:{userId?:string}){
-  const [tab,setTab]=useState<'chat'|'vision'>('chat');
+  const [tab,setTab]=useState<'chat'|'vision'|'embedding'>('chat');
   const [saved,setSaved]=useState<ModelSettings|null>(null);
   const [base,setBase]=useState(''),[model,setModel]=useState(''),[key,setKey]=useState('');
   const [permission,setPermission]=useState<ModelSettings['permission']>('manual');
@@ -27,9 +27,9 @@ export function ApiSettings({userId}:{userId?:string}){
   }
   return <section className="panel settings-panel api-settings">
     <h2>API 设置</h2>
-    <div role="tablist" aria-label="模型类型" className="api-tabs">{(['chat','vision'] as const).map(channel=><button key={channel} type="button" role="tab" aria-selected={tab===channel} disabled={busy} className={tab===channel?'selected':''} onClick={()=>{setTab(channel);if(saved)fill(saved,channel);setMessage('');}}>{channel==='chat'?'聊天模型':'视觉模型'}</button>)}</div>
+    <div role="tablist" aria-label="模型类型" className="api-tabs">{(['chat','vision','embedding'] as const).map(channel=><button key={channel} type="button" role="tab" aria-selected={tab===channel} disabled={busy} className={tab===channel?'selected':''} onClick={()=>{setTab(channel);if(saved)fill(saved,channel);setMessage('');}}>{channel==='chat'?'聊天模型':channel==='vision'?'视觉模型':'向量化模型'}</button>)}</div>
     {!userId?<p>登录后可设置个人模型。<a href="#/account">前往账号与登录</a></p>:<>
-      <p className="muted">{tab==='chat'?'用于课程内聊天和练习生成。':'用于视觉模型配置与图片连接测试；课程内图片上传对话尚未开放。'}</p>
+      <p className="muted">{tab==='embedding'?'用于资料索引与语义检索。请填写兼容 /embeddings 的 HTTPS 基础地址（通常以 /v1 结尾）；建立索引会把资料文字发送给该供应商。更换模型或地址后需要重建索引。':tab==='chat'?'用于课程内聊天和练习生成。':'用于视觉模型配置与图片连接测试；课程内图片上传对话尚未开放。'}</p>
       {saved&&<form onSubmit={e=>{e.preventDefault();void action('save');}}>
         <fieldset className="settings-fields" disabled={busy}>
           <label>接口基础地址<input aria-label="接口基础地址" type="url" placeholder="https://api.deepseek.com" value={base} onChange={e=>setBase(e.target.value)}/></label>

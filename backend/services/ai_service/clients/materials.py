@@ -26,3 +26,11 @@ async def download(cookie,user_id,cid,mid):
                 return bytes(data)
     except httpx.HTTPError:raise HTTPException(503,'输入文件读取失败') from None
 
+
+async def index_text(cookie,user_id,cid,mid):
+    try:
+        async with httpx.AsyncClient(timeout=40,trust_env=False) as client:
+            response=await client.get(LEARNING_URL+f'/api/courses/{cid}/materials/{mid}/index-text',headers=task_headers(cookie,user_id))
+        if response.status_code!=200:raise HTTPException(response.status_code,'资料全文读取失败，请检查权限与格式')
+        return response.json()
+    except (httpx.HTTPError,ValueError):raise HTTPException(503,'资料读取服务暂不可用') from None

@@ -168,11 +168,14 @@ async def run_job(handle):
         if already_completed:
             await assistants.wake(user,cid,credential,origin)
             return
-        config=None if kind in ('grading','sandbox') else configuration.model_config(user)
+        config=None if kind in ('grading','sandbox','rag') else configuration.model_config(user)
         handle.check()
         if kind=='teacher':
             runtime.locks.setdefault(handle.id,asyncio.Lock())
             await runtime.supervise(user,cid,handle.id,credential,origin,config)
+        elif kind=='rag':
+            from . import rag
+            await rag.run_job(user,cid,handle.id,credential,origin)
         elif kind=='sandbox':
             from . import sandbox
             await sandbox.run_job(user,cid,handle.id,credential,origin)
@@ -215,6 +218,8 @@ async def run_job(handle):
                 if row.kind=='sandbox' and not closing and not interrupted and not attention:
                     execution=db.get(SandboxRun,row.id)
                     row.status='completed' if execution and execution.status in ('completed','runtime_error','timeout') else 'needs_attention'
+                if row.kind=='rag' and not closing and not interrupted and not attention:
+                    row.status='completed' if row.payload.get('rag_ready') else 'needs_attention'
                 if row.kind=='sandbox' and row.status in ('needs_attention','auth_required'):
                     execution=db.get(SandboxRun,row.id)
                     if execution and execution.status not in ('completed','runtime_error','timeout'):
@@ -295,6 +300,11 @@ async def resume(user,jid,cookie,origin):
         row=db.get(AgentJob,jid)
         if not row or row.owner_id!=user.id:raise HTTPException(404,'任务不存在')
         cid=row.course_id;kind=row.kind
+    if kind=='rag':
+        from . import rag
+        from ..schemas.rag import IndexRequest
+        with SessionLocal() as db:mid=db.get(AgentJob,jid).payload['material_id']
+        return await rag.enqueue(user,cid,IndexRequest(id=uuid.uuid4(),material_id=mid),cookie,origin)
     if kind=='sandbox':
         from . import sandbox
         return await sandbox.enqueue(user,cid,jid,cookie,origin)

@@ -10,3 +10,7 @@ def listing(course_id:UUID,db=Depends(get_db),user=Depends(workspace_user)):
 @router.get('/{course_id}/materials/{material_id}/text')
 def read(course_id:UUID,material_id:UUID,offset:int=Query(0,ge=0,le=200000),limit:int=Query(6000,ge=1,le=6000),source_sha256:str|None=Query(None,pattern='^[0-9a-f]{64}$'),db=Depends(get_db),user=Depends(workspace_user)):
     return material_reading.read(db,user,course_id,material_id,offset,limit,source_sha256)
+
+@router.get('/{course_id}/materials/{material_id}/index-text')
+def index_text(course_id:UUID,material_id:UUID,db=Depends(get_db),user=Depends(workspace_user)):
+    return material_reading.read(db,user,course_id,material_id,0,200000)

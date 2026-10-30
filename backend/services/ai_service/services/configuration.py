@@ -31,7 +31,7 @@ def view(user,db):
     owner=profile(db,user.id)
     raw,values=read_file(user)
     result={'revision':revision(raw,owner.permission),'permission':owner.permission}
-    for channel in ['chat','vision']:
+    for channel in ['chat','vision','embedding']:
         prefix=channel.upper()
         result[channel]={'base_url':values.get(prefix+'_BASE_URL') or '', 'model':values.get(prefix+'_MODEL') or '', 'key_set':bool(values.get(prefix+'_API_KEY'))}
     db.commit()

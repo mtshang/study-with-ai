@@ -34,7 +34,7 @@ def permit_path(method,path):
     import re
     match=re.fullmatch(r'/api/courses/[0-9a-fA-F-]{36}(/.*)',path)
     tail=match.group(1) if match else ''
-    reads=(r'/context',r'/changes',r'/outline',r'/chapters/[0-9a-fA-F-]{36}',r'/teaching-activities',r'/code-runs/[0-9a-fA-F-]{36}',r'/reading-materials',r'/materials/[0-9a-fA-F-]{36}/text',r'/materials/[0-9a-fA-F-]{36}/download',r'/submissions/[0-9a-fA-F-]{36}/grading/input')
+    reads=(r'/context',r'/changes',r'/outline',r'/chapters/[0-9a-fA-F-]{36}',r'/teaching-activities',r'/code-runs/[0-9a-fA-F-]{36}',r'/reading-materials',r'/materials/[0-9a-fA-F-]{36}/text',r'/materials/[0-9a-fA-F-]{36}/index-text',r'/materials/[0-9a-fA-F-]{36}/download',r'/submissions/[0-9a-fA-F-]{36}/grading/input')
     writes={'POST':(r'/activities',r'/chapter-changes/preview',r'/chapter-changes',r'/ai-trash-preview',r'/ai-trash-actions'),
             'PUT':(r'/submissions/[0-9a-fA-F-]{36}/grading(?:/items/[0-9a-fA-F-]{36})?',)}
     patterns=reads if method=='GET' else writes.get(method,())
